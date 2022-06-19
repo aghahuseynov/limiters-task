@@ -1,5 +1,10 @@
 import { IS_PRIVATE_KEY } from './../auth/private.decorator';
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
@@ -36,7 +41,15 @@ export class TokenLimiterGuard implements CanActivate {
     );
 
     if (filtered.length > Number(process.env.TOKEN_LIMIT_PER_HOUR)) {
-      return false;
+      const last = new Date(filtered[0].date);
+      last.setHours(last.getHours() + 1);
+
+      throw new HttpException(
+        `Too many requests. Current limit:${
+          process.env.TOKEN_LIMIT_PER_HOUR
+        }. Will be able to request again at ${last.toLocaleString()}`,
+        403,
+      );
     }
 
     requestArr.push({ token: clientToken, date: new Date() });

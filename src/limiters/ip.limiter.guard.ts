@@ -39,7 +39,15 @@ export class IpLimiterGuard implements CanActivate {
     );
 
     if (filtered.length > Number(process.env.IP_LIMIT_PER_HOUR)) {
-      throw new HttpException('Too many requests', 429);
+      const last = new Date(filtered[0].date);
+      last.setHours(last.getHours() + 1);
+      
+      throw new HttpException(
+        `Too many requests. Current limit:${
+          process.env.IP_LIMIT_PER_HOUR
+        }. Will be able to request again at ${last.toLocaleString()}`,
+        403,
+      );
     }
 
     requestArr.push({ ip: clientIP, date: new Date() });

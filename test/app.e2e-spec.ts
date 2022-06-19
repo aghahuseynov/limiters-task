@@ -38,7 +38,7 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
-  it('should return 403 after 100 reques for IPt', (done) => {
+  it('should return 403 after 100 reques for IP', (done) => {
     const ipRequests = [];
     for (let i = 0; i < 104; i++) {
       const req = request(app.getHttpServer()).get('/public');
@@ -47,7 +47,6 @@ describe('AppController (e2e)', () => {
     Promise.all(ipRequests)
       .then((values) => {
         const hasValue = values.some((a) => a.status === 403);
-
         if (hasValue) {
           done();
         } else {
