@@ -15,10 +15,21 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('it should return 200 status code (GET) /private', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/private')
       .set('Authorization', 'Agha')
+      .expect(200)
+      .expect('Hello World!');
+  });
+
+  it('should return 403 status code without token (GET) /private', () => {
+    return request(app.getHttpServer()).get('/private').expect(403);
+  });
+
+  it('should return 200 status code (GET) /public ', () => {
+    return request(app.getHttpServer())
+      .get('/public')
       .expect(200)
       .expect('Hello World!');
   });
